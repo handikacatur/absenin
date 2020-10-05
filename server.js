@@ -1,97 +1,40 @@
-const { text } = require('express');
-const puppeteer = require('puppeteer');
+const express = require('express');
+const axios = require('axios');
+const {}
 
-const loginUrl = 'https://mmp.unej.ac.id/login/index.php';
+const url = 'https://api.telegram.org/bot';
+const apiToken = '1253962774:AAGCBobqNvMDaBbcYY4QHa7hvLDId4o0hFM'
 
-const tasks = [];
+const app = express();
 
-let loginAttempt = 5;
+app.use(express.json());
 
-const login = async (page) => {
-    /* Login function for every core */
+const sendMessage = (res, chatId, message) => {
+    axios.post(`${url}${apiToken}/sendMessage`,
+            {
+                chat_id: chatId,
+                text: message
+            }
+        ).then((response) => {
+            res.status(200).json(response);
+        }).catch((error) => {
+            res.send(error);
+        });
+}
 
-    await page.setDefaultNavigationTimeout(0);
+app.post('/', (req, res) => {
+    const chatId = req.body.message.chat.id;
+    const message = req.body.message.text;
 
-    await page.goto(loginUrl);
-
-    await page.keyboard.type('192410101066');
-    await page.keyboard.press('Tab');
-    await page.keyboard.type('Dhyka_67');
-    await page.keyboard.press('Enter');
-    
-    await page.waitForNavigation({waitUntil: 'networkidle0'});
-
-    const title = await page.evaluate(() => Array.from(
-        document.querySelectorAll('title'),
-        title => title.innerText
-    ));
-
-    // Check if user has signed in
-    if (title[0] === 'Dashboard') {
-        return 'Login Success!';
+    if (message === '/start' | message === '/help') {
+        sendMessage(res, chatId, 'Usage:\n/absenin username password');
+    } else if (message.search('/absenin') !== -1) {
+        sendMessage(res, chatId, 'Sedang mencari jadwal absen. Tunggu sebentar...');
     } else {
-        if (loginAttempt === 0) {
-            return 'Login Failed! Check your password and try again.';
-        } else {
-            loginAttempt -= 1;
-            page.reload();
-            login(page);
-        }
+        sendMessage(res, chatId, 'Perintah tidak ditemukan!\nGunakan perintah /absenin untuk absen.\nContoh: /absenin 1029383928 inipassword90');
     }
-}
+});
 
-
-const getActivites = async () => {
-    /* Get current activities */
-    const browser = await puppeteer.launch({headless: false});
-    const page = await browser.newPage();
-
-    await login(page);
-
-    const today = await page.$('td.today');
-    await today.click();
-
-    await page.waitForNavigation({waitUntil: 'networkidle0'});
-
-    let texts = await page.evaluate(() => Array.from(
-        document.querySelectorAll('span.date'),
-        span => span.innerText
-    ));
-
-    texts = texts.map((i) => i.split(' ')[1].split(':'));
-
-    texts.forEach((i) => {
-        const currentActivities = new Date();
-        currentActivities.setHours(parseInt(i[0]));
-        currentActivities.setMinutes(parseInt(i[1]));
-
-        tasks.push([currentActivities]);
-    });
-
-    const links = await page.evaluate(() => Array.from(
-        document.querySelectorAll('div.calendar_event_attendance a'),
-        a => a.getAttribute('href')
-    ));
-
-    for (key in links) {
-        tasks[key].push(links[key]);
-    }
-} 
-
-const core1 = async () => {
-    const browser = await puppeteer.launch({headless: false});
-    const page = await browser.newPage();
-
-    await login(page);
-
-    console.log(await page.content());
-
-//   await browser.close();
-}
-
-const main = async () => {
-    getActivites();
-    // core1();
-}
-
-main();
+app.listen(8080, () => {
+    console.log('App listening on port 8080');
+});
