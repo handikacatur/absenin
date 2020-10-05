@@ -31,27 +31,17 @@ const getActivites = async () => {
     await page.waitForNavigation({waitUntil: 'networkidle0'});
 
     // const today = await page.$('td.today');
-    const today = await page.$$('td.day');
+    const today = await page.$$('td.day'); // this is for test 
     await today[0].click();
 
     await page.waitForNavigation({waitUntil: 'networkidle0'});
 
-    // const activities = await page.$$('span.date');
-    const activities = await page.evaluate(() => document.querySelectorAll('span.date').innerText);
+    const texts = await page.evaluate(() => Array.from(
+        document.querySelectorAll('span.date'),
+        span => span.innerText
+    ));
 
-    console.log(activities);
-
-    // await activities.forEach((i) => {
-    //     const time = i.innerText.split(' ')[1].split(':');
-
-    //     const taskHour = new Date();
-    //     taskHour.setHours(parseInt(time[0]));
-    //     taskHour.setMinutes(parseInt(time[1]));
-
-    //     tasks.push(taskHour);
-    // });
-
-    console.log(tasks);
+    console.log(texts);
 } 
 
 const core1 = async () => {
