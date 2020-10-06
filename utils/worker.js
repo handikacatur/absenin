@@ -5,7 +5,7 @@ const axios = require('axios');
 const loginUrl = 'https://mmp.unej.ac.id/login/index.php';
 
 const url = 'https://api.telegram.org/bot';
-const apiToken = '1253962774:AAGCBobqNvMDaBbcYY4QHa7hvLDId4o0hFM'; // Change this shit with your bot token API
+const apiToken = '<your token>'; // Change this shit with your bot token API
 
 // Tasks stored here. The data should be [[the_time, link, chatId]]
 const tasks = [];

@@ -1,9 +1,10 @@
+// Some beutiful explanations are in /utils/worker.js
 const express = require('express');
 const axios = require('axios');
 const worker = require('./utils/worker');
 
 const url = 'https://api.telegram.org/bot';
-const apiToken = '1253962774:AAGCBobqNvMDaBbcYY4QHa7hvLDId4o0hFM';
+const apiToken = '<your token>';
 
 const app = express();
 
