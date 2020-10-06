@@ -25,8 +25,7 @@ const sendMessage = (res, chatId, message) => {
 app.post('/', (req, res) => {
     const chatId = req.body.message.chat.id;
     let message = req.body.message.text;
-
-    console.log(message + ': ' + req.body.message.chat.first_name);
+    
     if (message === '/start' | message === '/help') {
         sendMessage(res, chatId, 'Usage:\n/absenin username password\n\nNOTE: Untuk alasan keamanan, username dan password tidak akan disimpan pada database.');
     } else if (message.search('/absenin') !== -1) {
